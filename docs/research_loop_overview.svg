@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1180" viewBox="0 0 1600 1180" font-family="Noto Sans CJK SC, system-ui, sans-serif">
+  <!-- ================= 调色板（dataviz 参考实例，light 模式） =================
+       分类：blue #2a78d6 / orange #eb6834 / aqua #1baf7a / violet #4a3aa7
+       状态：good #0ca30c / warning #fab219 / critical #d03b3b
+       墨色：primary #0b0b0b / secondary #52514e / muted #898781
+       表面：page #f9f9f7 / card #fcfcfb / hairline #e1e0d9 -->
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1180" fill="#f9f9f7"/>
+
+  <!-- ================= 页眉 ================= -->
+  <text x="60" y="62" font-size="28" font-weight="700" fill="#0b0b0b">个人科研 Research Loop — 文档驱动的单任务科研循环</text>
+  <text x="60" y="94" font-size="14.5" fill="#52514e">THINK 只读构思 → 有边界的 TASK → 执行与 Sensors → Closeout 人工确认 → 回到 CURRENT 选择下一项决策</text>
+
+  <!-- 图例：三种 Task Type -->
+  <text x="1340" y="36" font-size="12" fill="#898781" text-anchor="middle">三种 Task Type</text>
+  <g>
+    <rect x="1150" y="44" width="120" height="30" rx="8" fill="#d1efe4" stroke="#e1e0d9"/>
+    <rect x="1164" y="54" width="10" height="10" rx="2" fill="#1baf7a"/>
+    <text x="1182" y="65" font-size="12.5" font-weight="700" fill="#0b0b0b">EXPLORE</text>
+  </g>
+  <g>
+    <rect x="1280" y="44" width="120" height="30" rx="8" fill="#fbe1d6" stroke="#e1e0d9"/>
+    <rect x="1294" y="54" width="10" height="10" rx="2" fill="#eb6834"/>
+    <text x="1312" y="65" font-size="12.5" font-weight="700" fill="#0b0b0b">BUILD</text>
+  </g>
+  <g>
+    <rect x="1410" y="44" width="120" height="30" rx="8" fill="#dbd8ed" stroke="#e1e0d9"/>
+    <rect x="1424" y="54" width="10" height="10" rx="2" fill="#4a3aa7"/>
+    <text x="1442" y="65" font-size="12.5" font-weight="700" fill="#0b0b0b">FORMAL</text>
+  </g>
+
+  <!-- ================= 左列：研究者（人） ================= -->
+  <g>
+    <rect x="60" y="140" width="260" height="560" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="84" y="180" font-size="18" font-weight="700" fill="#0b0b0b">研究者（人）</text>
+    <text x="84" y="202" font-size="13" fill="#52514e">决定 Why · What · Valid</text>
+
+    <!-- 决策清单 -->
+    <circle cx="88" cy="235" r="12" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+    <text x="88" y="239" font-size="12.5" font-weight="700" fill="#2a78d6" text-anchor="middle">1</text>
+    <text x="112" y="240" font-size="13.5" fill="#0b0b0b">研究价值、Claim 与成功标准</text>
+
+    <circle cx="88" cy="275" r="12" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+    <text x="88" y="279" font-size="12.5" font-weight="700" fill="#2a78d6" text-anchor="middle">2</text>
+    <text x="112" y="280" font-size="13.5" fill="#0b0b0b">接受假设、阈值与近似</text>
+
+    <circle cx="88" cy="315" r="12" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+    <text x="88" y="319" font-size="12.5" font-weight="700" fill="#2a78d6" text-anchor="middle">3</text>
+    <text x="112" y="320" font-size="13.5" fill="#0b0b0b">确认计划 → 准备 TASK</text>
+
+    <circle cx="88" cy="355" r="12" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+    <text x="88" y="359" font-size="12.5" font-weight="700" fill="#2a78d6" text-anchor="middle">4</text>
+    <text x="112" y="360" font-size="13.5" fill="#0b0b0b">逐项确认 Closeout Plan</text>
+
+    <circle cx="88" cy="395" r="12" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+    <text x="88" y="399" font-size="12.5" font-weight="700" fill="#2a78d6" text-anchor="middle">5</text>
+    <text x="112" y="400" font-size="13.5" fill="#0b0b0b">接受 / 拒绝正式证据</text>
+
+    <line x1="84" y1="432" x2="296" y2="432" stroke="#e1e0d9"/>
+
+    <!-- 真实机器人安全门（critical 状态色：图标 + 标签） -->
+    <rect x="76" y="448" width="228" height="172" rx="8" fill="#f6d8d8" stroke="#e1e0d9"/>
+    <rect x="76" y="448" width="4" height="172" rx="2" fill="#d03b3b"/>
+    <polygon points="98,470 104,470 101,481" fill="#d03b3b"/>
+    <line x1="101" y1="473" x2="101" y2="477" stroke="#ffffff" stroke-width="1.5"/>
+    <circle cx="101" cy="479" r="1" fill="#ffffff"/>
+    <text x="112" y="482" font-size="14" font-weight="700" fill="#0b0b0b">真实机器人运动</text>
+    <text x="92" y="510" font-size="12" fill="#0b0b0b">批准前说明：命令 · 硬件 · 限制 ·</text>
+    <text x="92" y="532" font-size="12" fill="#0b0b0b">预期行为 · 停止方式</text>
+    <text x="92" y="560" font-size="12" font-weight="700" fill="#0b0b0b">批准后才执行 · 失败后不自动重试</text>
+
+    <text x="84" y="652" font-size="12.5" fill="#52514e">Codex 决定</text>
+    <text x="84" y="672" font-size="12.5" font-weight="700" fill="#0b0b0b">How · Where · Check · Clean</text>
+  </g>
+
+  <!-- ================= 中列：主循环 ================= -->
+
+  <!-- THINK -->
+  <g>
+    <rect x="380" y="140" width="720" height="118" rx="10" fill="#eaf2fb" stroke="#e1e0d9"/>
+    <rect x="380" y="140" width="4" height="118" rx="2" fill="#2a78d6"/>
+    <text x="404" y="178" font-size="17" font-weight="700" fill="#0b0b0b">THINK · 只读构思</text>
+    <rect x="998" y="150" width="84" height="24" rx="12" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1040" y="166" font-size="11.5" fill="#52514e" text-anchor="middle">无 Active TASK 时</text>
+    <text x="404" y="204" font-size="13.5" fill="#0b0b0b">理解问题 · 只读检查必要上下文 · 比较方案 · 找反例与缺失约束</text>
+    <text x="404" y="228" font-size="12.5" fill="#52514e">→ 形成待确认的落实计划，不修改任何项目文件</text>
+  </g>
+
+  <!-- THINK → state 箭头 + 用户确认门 -->
+  <line x1="740" y1="258" x2="740" y2="300" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="768" y="268" width="130" height="28" rx="8" fill="#fab219"/>
+  <polygon points="782,275 788,275 785,287" fill="#0b0b0b"/>
+  <line x1="785" y1="278" x2="785" y2="282" stroke="#fab219" stroke-width="1.2"/>
+  <circle cx="785" cy="284" r="1" fill="#fab219"/>
+  <text x="800" y="287" font-size="12.5" font-weight="700" fill="#0b0b0b">用户确认计划</text>
+
+  <!-- state/ 控制面 -->
+  <g>
+    <rect x="380" y="302" width="720" height="264" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="380" y="302" width="720" height="40" rx="10" fill="#d4e4f7"/>
+    <rect x="380" y="330" width="720" height="12" fill="#ffffff"/>
+    <text x="404" y="328" font-size="16" font-weight="700" fill="#0b0b0b">state/ — 当前控制面</text>
+    <text x="1084" y="328" font-size="12" fill="#52514e" text-anchor="end">当前唯一行动 · 已接受真相 · 长期边界</text>
+
+    <rect x="396" y="342" width="688" height="64" rx="8" fill="#fcfcfb" stroke="#e1e0d9"/>
+    <text x="420" y="370" font-size="14" font-weight="700" fill="#0b0b0b">PROJECT.md</text>
+    <text x="420" y="394" font-size="13" fill="#52514e">长期目标 · 边界 · 技术环境 — 很少修改</text>
+
+    <rect x="396" y="414" width="688" height="64" rx="8" fill="#fcfcfb" stroke="#e1e0d9"/>
+    <text x="420" y="442" font-size="14" font-weight="700" fill="#0b0b0b">CURRENT.md</text>
+    <text x="420" y="466" font-size="13" fill="#52514e">已接受真相 · 主要不确定性 · 下一项决策 — 覆盖更新</text>
+
+    <rect x="396" y="486" width="688" height="74" rx="8" fill="#ffffff" stroke="#c3c2b7"/>
+    <rect x="396" y="486" width="4" height="74" rx="2" fill="#2a78d6"/>
+    <text x="420" y="510" font-size="15" font-weight="700" fill="#0b0b0b">TASK.md</text>
+    <rect x="512" y="494" width="130" height="22" rx="6" fill="#2a78d6"/>
+    <text x="524" y="509" font-size="12" fill="#ffffff">Active 时唯一行动</text>
+    <text x="420" y="532" font-size="12.5" fill="#0b0b0b">Question · Allowed Changes · Non-goals · Done When</text>
+    <text x="420" y="552" font-size="12.5" fill="#52514e">Stop and Ask · Outputs — 每任务替换，不追加历史</text>
+  </g>
+
+  <!-- state → 三种 Task Type（扇出） -->
+  <polyline points="740,566 740,592 493,592 493,604" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="740" y1="566" x2="740" y2="604" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <polyline points="740,566 740,592 985,592 985,604" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- EXPLORE -->
+  <g>
+    <rect x="380" y="606" width="226" height="204" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="380" y="606" width="226" height="40" rx="10" fill="#d1efe4"/>
+    <rect x="380" y="634" width="226" height="12" fill="#ffffff"/>
+    <text x="396" y="632" font-size="16" font-weight="700" fill="#0b0b0b">EXPLORE</text>
+    <text x="396" y="672" font-size="12.5" fill="#52514e">方向是否合理、值得继续？</text>
+    <text x="396" y="698" font-size="12.5" fill="#0b0b0b">理论分析 · 反例 · 支持决策的最小临时计算</text>
+    <rect x="396" y="710" width="194" height="48" rx="6" fill="#d1efe4"/>
+    <text x="404" y="730" font-size="12" font-weight="700" fill="#0b0b0b">无专属合同</text>
+    <text x="404" y="748" font-size="11.5" fill="#0b0b0b">Git 忽略 · 只受 TASK 边界约束</text>
+    <text x="396" y="798" font-size="12.5" font-weight="700" fill="#0b0b0b">scratch/&lt;task-id&gt;/</text>
+    <rect x="519" y="784" width="71" height="22" rx="6" fill="#1baf7a"/>
+    <text x="531" y="799" font-size="11" font-weight="700" fill="#0b0b0b">非正式资产</text>
+  </g>
+
+  <!-- BUILD -->
+  <g>
+    <rect x="626" y="606" width="226" height="204" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="626" y="606" width="226" height="40" rx="10" fill="#fbe1d6"/>
+    <rect x="626" y="634" width="226" height="12" fill="#ffffff"/>
+    <text x="642" y="632" font-size="16" font-weight="700" fill="#0b0b0b">BUILD</text>
+    <text x="642" y="672" font-size="12.5" fill="#52514e">怎样正确实现已接受的理论？</text>
+    <text x="642" y="698" font-size="12.5" fill="#0b0b0b">实现已接受的理论或明确工程能力</text>
+    <rect x="642" y="710" width="194" height="56" rx="6" fill="#fbe1d6"/>
+    <text x="650" y="730" font-size="12" font-weight="700" fill="#0b0b0b">Build Contract</text>
+    <text x="650" y="748" font-size="11.5" fill="#0b0b0b">需求/Claim → Owner/Interface</text>
+    <text x="650" y="764" font-size="11.5" fill="#0b0b0b">→ 关键约束 → 验证</text>
+    <text x="642" y="798" font-size="12.5" font-weight="700" fill="#0b0b0b">Landing Gate → src/ · ros2_ws</text>
+  </g>
+
+  <!-- FORMAL -->
+  <g>
+    <rect x="872" y="606" width="226" height="204" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="872" y="606" width="226" height="40" rx="10" fill="#dbd8ed"/>
+    <rect x="872" y="634" width="226" height="12" fill="#ffffff"/>
+    <text x="888" y="632" font-size="16" font-weight="700" fill="#0b0b0b">FORMAL</text>
+    <text x="888" y="672" font-size="12.5" fill="#52514e">证据是否支持 Claim？</text>
+    <text x="888" y="698" font-size="12.5" fill="#0b0b0b">按冻结 Protocol 产生论文级证据</text>
+    <rect x="888" y="710" width="194" height="56" rx="6" fill="#dbd8ed"/>
+    <text x="896" y="730" font-size="12" font-weight="700" fill="#0b0b0b">Experiment Contract</text>
+    <text x="896" y="748" font-size="11.5" fill="#0b0b0b">Claim → Protocol → 判定规则</text>
+    <text x="896" y="764" font-size="11.5" fill="#0b0b0b">→ 证据位置（执行前冻结）</text>
+    <text x="888" y="798" font-size="12.5" font-weight="700" fill="#0b0b0b">Run → Experiment · 全结果记录</text>
+  </g>
+
+  <!-- 执行 + Sensors -->
+  <g>
+    <rect x="380" y="838" width="720" height="76" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="380" y="838" width="4" height="76" rx="2" fill="#0b0b0b"/>
+    <text x="404" y="864" font-size="16" font-weight="700" fill="#0b0b0b">执行 + Sensors</text>
+    <text x="404" y="888" font-size="13" fill="#0b0b0b">diff · 测试 · 性质检查 · 校验值 · 证据审查 — 科学判断仍由用户接受</text>
+    <text x="404" y="906" font-size="12" fill="#52514e">改变研究含义 / 超出边界 / 新增依赖 / 提升探索成果 / 机器人运动 → Stop and Ask</text>
+  </g>
+  <line x1="493" y1="810" x2="493" y2="836" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="739" y1="810" x2="739" y2="836" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="985" y1="810" x2="985" y2="836" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Closeout -->
+  <g>
+    <rect x="380" y="942" width="720" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="380" y="942" width="4" height="92" rx="2" fill="#0b0b0b"/>
+    <text x="404" y="976" font-size="17" font-weight="700" fill="#0b0b0b">Closeout Plan + 用户确认</text>
+    <rect x="924" y="950" width="160" height="28" rx="8" fill="#fab219"/>
+    <polygon points="938,957 944,957 941,969" fill="#0b0b0b"/>
+    <line x1="941" y1="960" x2="941" y2="964" stroke="#fab219" stroke-width="1.2"/>
+    <circle cx="941" cy="966" r="1" fill="#fab219"/>
+    <text x="958" y="969" font-size="12.5" font-weight="700" fill="#0b0b0b">用户逐项确认后才执行</text>
+    <text x="404" y="1004" font-size="13" fill="#0b0b0b">每项结果一行：对象 · 处理 · 目标位置 · 原因；确认后只执行表内动作</text>
+    <text x="404" y="1024" font-size="12" fill="#52514e">TASK 重置为 Inactive；确认前不移动 / 删除 / 更新长期状态</text>
+  </g>
+  <line x1="740" y1="914" x2="740" y2="940" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="740" y1="1034" x2="740" y2="1060" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- 四类结果去向 -->
+  <g>
+    <rect x="380" y="1062" width="170" height="68" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="380" y="1062" width="4" height="68" rx="2" fill="#2a78d6"/>
+    <text x="396" y="1088" font-size="13" font-weight="700" fill="#0b0b0b">更新知识</text>
+    <text x="396" y="1108" font-size="12" fill="#52514e">Idea · CURRENT</text>
+  </g>
+  <g>
+    <rect x="560" y="1062" width="170" height="68" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="560" y="1062" width="4" height="68" rx="2" fill="#eb6834"/>
+    <text x="576" y="1088" font-size="13" font-weight="700" fill="#0b0b0b">维护代码</text>
+    <text x="576" y="1108" font-size="12" fill="#52514e">src · ros2_ws · tests</text>
+  </g>
+  <g>
+    <rect x="740" y="1062" width="170" height="68" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="740" y="1062" width="4" height="68" rx="2" fill="#4a3aa7"/>
+    <text x="756" y="1088" font-size="13" font-weight="700" fill="#0b0b0b">保留证据</text>
+    <text x="756" y="1108" font-size="12" fill="#52514e">Run · Experiment · 引用</text>
+  </g>
+  <g>
+    <rect x="920" y="1062" width="170" height="68" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="920" y="1062" width="4" height="68" rx="2" fill="#898781"/>
+    <text x="936" y="1088" font-size="13" font-weight="700" fill="#0b0b0b">删除临时</text>
+    <text x="936" y="1108" font-size="12" fill="#52514e">确认后的 scratch 路径</text>
+  </g>
+
+  <!-- 回路：回到 CURRENT -->
+  <polyline points="380,1096 358,1096 358,446 386,446" fill="none" stroke="#898781" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+  <text transform="rotate(-90 344 770)" x="344" y="770" font-size="12" fill="#52514e" text-anchor="middle">回到 CURRENT · 选择下一项决策</text>
+
+  <!-- ================= 右列：Harness 机制 ================= -->
+
+  <!-- 人机分工 -->
+  <g>
+    <rect x="1150" y="140" width="390" height="160" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1174" y="174" font-size="16" font-weight="700" fill="#0b0b0b">人机分工</text>
+    <text x="1174" y="204" font-size="13" font-weight="700" fill="#0b0b0b">你 — Why · What · Valid</text>
+    <text x="1174" y="224" font-size="12.5" fill="#52514e">研究价值 · Claim · 成功标准 · 接受假设与证据</text>
+    <text x="1174" y="254" font-size="13" font-weight="700" fill="#0b0b0b">Codex — How · Where · Check · Clean</text>
+    <text x="1174" y="274" font-size="12.5" fill="#52514e">owner · 接口 · 目录 · 测试 · 证据身份与去向</text>
+  </g>
+
+  <!-- 渐进披露 -->
+  <g>
+    <rect x="1150" y="320" width="390" height="168" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1174" y="352" font-size="16" font-weight="700" fill="#0b0b0b">渐进披露 · 规则分层</text>
+    <rect x="1174" y="368" width="350" height="28" rx="6" fill="#eef4fc"/>
+    <text x="1186" y="386" font-size="12.5" fill="#0b0b0b">根 AGENTS.md — 硬规则与导航</text>
+    <rect x="1174" y="402" width="350" height="28" rx="6" fill="#eef4fc"/>
+    <text x="1186" y="420" font-size="12.5" fill="#0b0b0b">TASK.md — 引用具体研究对象</text>
+    <rect x="1174" y="436" width="350" height="28" rx="6" fill="#eef4fc"/>
+    <text x="1186" y="454" font-size="12.5" fill="#0b0b0b">子目录 AGENTS.md — 写入前读取局部规则</text>
+    <text x="1174" y="480" font-size="12" fill="#52514e">README 只服务人；规则冲突 → 停止报告</text>
+  </g>
+
+  <!-- 证据链 -->
+  <g>
+    <rect x="1150" y="508" width="390" height="192" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1174" y="536" font-size="16" font-weight="700" fill="#0b0b0b">正式证据链</text>
+    <text x="1174" y="566" font-size="13" font-weight="700" fill="#0b0b0b">Claim → 冻结 Protocol → Run</text>
+    <text x="1174" y="590" font-size="13" font-weight="700" fill="#0b0b0b">→ Experiment → Idea Evidence Map</text>
+
+    <rect x="1174" y="604" width="78" height="28" rx="6" fill="#ffffff" stroke="#e1e0d9"/>
+    <circle cx="1186" cy="618" r="4.5" fill="#0ca30c"/>
+    <text x="1196" y="622" font-size="11.5" fill="#0b0b0b">Supported</text>
+    <rect x="1260" y="604" width="78" height="28" rx="6" fill="#ffffff" stroke="#e1e0d9"/>
+    <circle cx="1272" cy="618" r="4.5" fill="#d03b3b"/>
+    <text x="1282" y="622" font-size="11.5" fill="#0b0b0b">Refuted</text>
+    <rect x="1346" y="604" width="78" height="28" rx="6" fill="#ffffff" stroke="#e1e0d9"/>
+    <circle cx="1358" cy="618" r="4.5" fill="#fab219" stroke="#c98a00"/>
+    <text x="1368" y="622" font-size="11.5" fill="#0b0b0b">Inconcl.</text>
+    <rect x="1432" y="604" width="78" height="28" rx="6" fill="#ffffff" stroke="#e1e0d9"/>
+    <circle cx="1444" cy="618" r="4.5" fill="#898781"/>
+    <text x="1454" y="622" font-size="11.5" fill="#0b0b0b">Invalid</text>
+
+    <text x="1174" y="660" font-size="12" fill="#52514e">四种结果都必须记录；Run 使用 UTC 身份</text>
+    <text x="1174" y="680" font-size="12" fill="#52514e">原始数据可在外 · 须有稳定引用与校验值</text>
+  </g>
+
+  <!-- 园艺纪律 -->
+  <g>
+    <rect x="1150" y="720" width="390" height="116" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1174" y="750" font-size="16" font-weight="700" fill="#0b0b0b">园艺 · 规则生长</text>
+    <text x="1174" y="776" font-size="13" fill="#0b0b0b">每次关闭只问一个问题：</text>
+    <text x="1174" y="798" font-size="13" font-weight="700" fill="#0b0b0b">是否出现会重复发生的 Harness 缺口？</text>
+    <text x="1174" y="824" font-size="12" fill="#52514e">只有重复、系统性失败才增加规则或最小 Sensor</text>
+  </g>
+
+  <!-- 页脚 -->
+  <text x="800" y="1152" font-size="12" fill="#898781" text-anchor="middle">文档驱动 Harness：THINK 只读构思 · 单一 Active TASK · 合同冻结 · Closeout 人工确认 · 园艺纪律</text>
+</svg>
