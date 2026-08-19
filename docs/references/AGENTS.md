@@ -11,6 +11,8 @@
 
 - 记录论文、数据集、标准和外部实现的稳定来源、版本、许可证和实际用途。
 - 只保留足以复现引用的短说明；大文件留在原始来源或明确的外部依赖中。
+- 每条记录使用 `R-NNN_short_name.md`，并包含唯一 cite key、作者/标题、来源 URL 或 DOI、版本/访问日期、许可证、实际用途、影响对象和可定位的页码/章节/commit。推荐从 `REFERENCE_TEMPLATE.md` 复制。
+- 只有已影响研究假设、实现或实验设计的资料进入索引；待读清单放在任务输出。
 
 ## 禁止
 
@@ -21,3 +23,7 @@
 
 资料在被 Idea、Protocol、代码或 Experiment 实际引用后进入目录；用途消失时可以删除条目，
 但仍被正式证据引用的来源必须保留。
+
+## Immutability
+
+已被 Frozen Protocol 或 Completed Experiment 引用的记录不得改变来源、版本、许可证或证据定位。更换来源建立新的 `R-NNN`；纯排版/链接修正标注 `Editorial correction` 并保留修正前 hash。

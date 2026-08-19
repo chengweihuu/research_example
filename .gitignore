@@ -17,8 +17,13 @@ compile_commands.json
 scratch/*
 !scratch/AGENTS.md
 !scratch/README.md
+!scratch/*/
+scratch/*/*
 /runs/
 *.log
+/scratch/*/raw/
+/scratch/*/context-cache/
+!scratch/*/manifest.yaml
 
 # 机器人与大型实验数据
 *.bag

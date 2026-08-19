@@ -141,3 +141,13 @@ Idea 的完整结论以及 CURRENT 的指针或一句话接受状态；任一端
 若缺口会使当前结果无效，或修复需要改规则、扩大 Allowed Changes，立即 Stop and Ask。其他
 一次性摩擦放入“剩余不确定性”；关闭时只询问它是否已重复且值得独立维护任务。科学判断
 不得机械化，确定性结构只有重复失败后才增加最小检查。
+
+## Environment Contract and staged compute
+
+Active BUILD 的 `Context` 或 `Build Contract` 必须指向一个 Environment Contract。它至少说明运行模式、基础镜像或主机版本、锁定依赖、硬件/驱动、随机性和资源上限；实现文件不得早于合同确定。FORMAL 还必须记录实际 image digest/主机指纹、依赖锁、数据清单和代码 commit。
+
+所有非零计算都声明阶段：`Smoke`、`Pilot`、`Scale` 或 `Formal`。TASK 必须写出升级条件、每级预算和失败停止条件；失败不得自动升级或修改冻结规则。
+
+## Context state
+
+结构化状态的最小字段和委派包格式见 `state/CONTEXT.md`。TASK 的 `Progress` 只写当前检查点；原始工具结果不得进入 `CURRENT.md`、Idea、Protocol 或长期对话摘要，只能通过带 hash 的外部产物指针引用。

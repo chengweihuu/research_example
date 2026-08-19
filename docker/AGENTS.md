@@ -10,6 +10,8 @@
 - 只有确实需要固定系统依赖、ROS/驱动环境或跨机器复现时才创建文件。
 - 镜像构建应引用正式代码、固定依赖和明确版本；运行参数由任务或正式协议提供。
 - 环境变更应说明影响的 BUILD/FORMAL 任务，并保持入口可复现。
+- BUILD 开始前先填写 `ENVIRONMENT_CONTRACT.md`；Dockerfile 只是合同的实现，不是需求发现的替代品。未确认系统依赖时不得凭空创建项目镜像。
+- FORMAL 记录不可变 image digest、Dockerfile/lockfile hash、挂载点、入口命令和资源限制；新环境必须升级合同版本。
 
 ## 禁止
 

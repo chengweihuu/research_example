@@ -75,3 +75,17 @@ Codex CLI/TUI，再用真实任务验证。
 ## 完成回复
 
 只返回：结果、决定性证据、剩余不确定性、Closeout Plan 和下一项待决定事项。
+
+## 环境、冻结与计算闸门
+
+- BUILD 在写实现前必须在 TASK 中声明 `Environment Contract`：运行模式（host 或 Docker）、基础镜像/系统版本、语言与依赖锁、硬件/驱动（如有）、随机性和资源上限。
+- FORMAL 必须绑定环境合同、依赖锁、数据清单、代码 commit，以及 Docker image digest 或主机环境指纹；绑定内容不能事后以补丁覆盖。
+- 冻结对象只能通过新版本或新 Protocol 修改。旧文件、commit、运行和不利结果保留；纯排版或链接修正单独标记为 `Editorial correction`，不得改变数值、判定、范围或排除条件。
+- 计算按 `Smoke → Pilot → Scale → Formal` 升级。每一级必须有通过条件、预算和停止条件；前一级失败时停止并报告，不自动扩大规模。
+
+## Agent context contract
+
+- 持久状态只保存结构化事实、指针、决策和校验值；原始工具输出和长日志写入任务输出目录，由短记录引用路径、摘要和 hash。
+- 检索采用渐进披露：先读控制面和索引，再按对象/章节加载最小片段，只有明确需要时才读原始产物。
+- 子 agent 默认不调用。委派必须发送 bounded Delegation Packet，只接收 bounded Result Packet；详细过程留在子任务输出中。
+- 格式见 [`state/CONTEXT.md`](state/CONTEXT.md)。若运行平台不支持外部状态、独立 context 或 agent 隔离，必须报告能力缺口。
