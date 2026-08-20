@@ -292,6 +292,34 @@
     <text x="1174" y="824" font-size="12" fill="#52514e">只有重复、系统性失败才增加规则或最小 Sensor</text>
   </g>
 
+  <!-- 预证据论文稿生命周期 -->
+  <g>
+    <rect x="1150" y="856" width="390" height="220" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="1174" y="886" font-size="16" font-weight="700" fill="#0b0b0b">论文稿 · 预证据到投稿</text>
+    <text x="1174" y="908" font-size="12" fill="#52514e">叙述性投影：不是 Claim、科学结论或证据权威</text>
+
+    <rect x="1174" y="924" width="106" height="42" rx="7" fill="#fff0ca" stroke="#e1e0d9"/>
+    <text x="1227" y="942" font-size="11.5" font-weight="700" fill="#0b0b0b" text-anchor="middle">PreEvidence</text>
+    <text x="1227" y="958" font-size="10.5" fill="#52514e" text-anchor="middle">明示预期/占位</text>
+
+    <line x1="1284" y1="945" x2="1302" y2="945" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <rect x="1306" y="924" width="106" height="42" rx="7" fill="#eaf2fb" stroke="#e1e0d9"/>
+    <text x="1359" y="942" font-size="11.5" font-weight="700" fill="#0b0b0b" text-anchor="middle">EvidenceAligned</text>
+    <text x="1359" y="958" font-size="10.5" fill="#52514e" text-anchor="middle">主张/结果可追溯</text>
+
+    <line x1="1416" y1="945" x2="1434" y2="945" stroke="#898781" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <rect x="1438" y="924" width="86" height="42" rx="7" fill="#d1efe4" stroke="#e1e0d9"/>
+    <text x="1481" y="938" font-size="10.5" font-weight="700" fill="#0b0b0b" text-anchor="middle">Submission</text>
+    <text x="1481" y="952" font-size="10.5" font-weight="700" fill="#0b0b0b" text-anchor="middle">Candidate</text>
+
+    <text x="1174" y="992" font-size="12" fill="#0b0b0b">EvidenceAligned：Claim → Idea；实验事实 → Experiment；无未验证结果</text>
+    <text x="1174" y="1014" font-size="12" fill="#0b0b0b">SubmissionCandidate：研究者在内容级 Closeout 批准稿件与证据指针</text>
+    <text x="1174" y="1042" font-size="12" fill="#52514e">新证据使引用失效或出现未验证部分 → 降回 PreEvidence</text>
+    <text x="1174" y="1062" font-size="12" fill="#52514e">稿件与 Idea / Protocol / Experiment 冲突时，以后三者为准</text>
+  </g>
+
   <!-- 页脚 -->
   <text x="800" y="1152" font-size="12" fill="#898781" text-anchor="middle">文档驱动 Harness：THINK 只读构思 · 单一 Active TASK · 合同冻结 · Closeout 人工确认 · 园艺纪律</text>
 </svg>
