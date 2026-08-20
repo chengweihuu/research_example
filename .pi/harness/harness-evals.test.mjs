@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { sha256 } from "./execution-packet.mjs";
 import { HashLedger, verifyLedger } from "./ledger.mjs";
@@ -9,6 +12,7 @@ import { classifyTransportObservation } from "./transport-diagnostic.mjs";
 import { observePiEventStages } from "./pi-event-observer.mjs";
 import { projectCanary } from "./canary-runner.mjs";
 import { executeCanary } from "./canary-executor.mjs";
+import { sealCanonicalRun } from "./canonical-run-seal.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -66,8 +70,12 @@ test("fixed canonical Runner case binds one request to all projections", () => {
 	assert.equal(result.requestCount, 1); assert.equal(result.ledgerVerification.valid, true);
 });
 
-test("fixed executor accepts only sanitized async outcomes", async () => {
+test("fixed executor seals one independently verified canonical Run", async t => {
 	const model = { id: "gpt-5.6-sol", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 3, output: 18 } };
 	const result = await executeCanary({ runId: "R-async", provider: model.provider, modelId: model.id, catalogModel: model, serializedBytes: 1, outputTokens: 1, totalTokenCap: 2900, usdCap: .05, session: { sessionId: "R-async", eventTypes: [] }, transport: async () => ({ stages: ["before_request", "agent_start", "stream_start", "agent_end", "after_request", "after_settlement"], sseEvents: ["opened", "interrupted"] }) });
 	assert.equal(result.executorCalls, 1); assert.equal(result.sseOutcome.outcome, "stream_interrupted");
+	const outputDir = await mkdtemp(join(tmpdir(), "h019-eval-"));
+	t.after(() => rm(outputDir, { recursive: true, force: true }));
+	const sealed = await sealCanonicalRun({ outputDir, taskId: "H-019", branch: "task/H-019-canonical-run-seal", ref: "5639fc7", executorResult: result, piSession: { kind: "pi-core-session", sessionId: "R-async", messages: [], events: [] }, contextManifest: { ambientContext: false, authRead: false }, capabilityManifest: { modelRequest: { maximumCalls: 1 }, tools: [] }, environment: { runtime: "host", node: process.version, piCodingAgent: "0.84.2" } });
+	assert.equal(sealed.manifest.status, "INCOMPLETE_RESPONSE"); assert.equal(sealed.verification.accepted, true);
 });

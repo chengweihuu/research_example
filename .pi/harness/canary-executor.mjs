@@ -4,6 +4,7 @@ import { projectCanary } from "./canary-runner.mjs";
 export async function executeCanary({ transport, session, ...input }) {
 	if (typeof transport !== "function") throw new TypeError("transport must be an async function");
 	if (!session || !Array.isArray(session.eventTypes) || session.eventTypes.some(type => typeof type !== "string")) throw new TypeError("session must contain event type strings only");
+	if (typeof session.sessionId !== "string" || session.sessionId.length === 0 || session.sessionId !== input.runId) throw new Error("sessionId must equal runId");
 	let calls = 0;
 	const invoke = async () => {
 		if (calls >= 1) throw new Error("Executor call cap exceeded");
@@ -14,5 +15,13 @@ export async function executeCanary({ transport, session, ...input }) {
 	};
 	const result = await invoke();
 	const projection = projectCanary({ ...input, stages: result.stages, sseEvents: result.sseEvents, assistant: result.assistant, invoke: () => undefined });
-	return Object.freeze({ ...projection, executorCalls: calls, session: Object.freeze({ sessionId: session.sessionId, eventTypes: Object.freeze([...session.eventTypes]) }) });
+	if (projection.requestCount !== calls) throw new Error("Executor and canonical request counts disagree");
+	return Object.freeze({
+		kind: "canonical-executor-result",
+		version: 1,
+		...projection,
+		executorCalls: calls,
+		noSecondCall: calls === 1,
+		session: Object.freeze({ sessionId: session.sessionId, eventTypes: Object.freeze([...session.eventTypes]) }),
+	});
 }
