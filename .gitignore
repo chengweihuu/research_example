@@ -14,6 +14,8 @@ CMakeCache.txt
 compile_commands.json
 
 # 可丢弃的本地工作
+.pi/node_modules/
+.pi/runs/
 scratch/*
 !scratch/AGENTS.md
 !scratch/README.md
