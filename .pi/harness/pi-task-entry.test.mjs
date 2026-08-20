@@ -13,7 +13,7 @@ test("entry creates one canonical fixture Run and returns a bounded summary", as
 	const result = await runEntryRequest(request(join(root, "run")));
 	assert.equal(result.manifestStatus, "COMPLETED");
 	assert.equal(result.verification.accepted, true);
-	assert.equal(result.promotion.code, "EVIDENCE_PROMOTION_ELIGIBLE");
+	assert.equal(result.promotion.code, "RUN_REGISTERED_NOT_EVIDENCE");
 	assert.equal("messages" in result, false);
 	const session = JSON.parse(await readFile(join(root, "run", "pi-core-session.json"), "utf8"));
 	assert.equal(session.messages.at(-1).content[0].text, "PI_HARNESS_FIXTURE_OK");

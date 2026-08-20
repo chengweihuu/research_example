@@ -1,0 +1,2 @@
+import assert from "node:assert/strict";import test from "node:test";import {assessEvidenceEligibility} from "./evidence-eligibility.mjs";
+test("integrity and incomplete Runs cannot become evidence",()=>{assert.equal(assessEvidenceEligibility({integrityVerified:true,terminalStatus:"INCOMPLETE_RESPONSE",protocolBinding:true}).state,"INTEGRITY_VERIFIED");assert.equal(assessEvidenceEligibility({integrityVerified:true,terminalStatus:"COMPLETED",protocolBinding:true,outcomeRecorded:true,researcherAccepted:true}).state,"RESEARCHER_ACCEPTED");});

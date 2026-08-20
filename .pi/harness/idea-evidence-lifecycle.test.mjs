@@ -52,7 +52,7 @@ test("seals one Idea-bound Run, rejects ineligible candidates, and closes perman
 	await assert.rejects(() => sealIdeaRun({ task, executorResult: secondWriterResult, piSession: { sessionId: task.sessionId }, capabilityManifest: {}, environment: {} }), /exactly one Run writer attempt/);
 	const promoted = await promoteEvidence({ task, outputDir });
 	assert.equal(promoted.accepted, true);
-	assert.equal(promoted.code, "EVIDENCE_PROMOTION_ELIGIBLE");
+	assert.equal(promoted.code, "RUN_REGISTERED_NOT_EVIDENCE");
 	assert.equal("session" in promoted, false);
 	assert.equal(inspectIdeaTask(task).promoted, true);
 

@@ -100,7 +100,7 @@ export async function runPiHarnessTask({ ideaId, taskId, runId, question, output
 		contextManifest: { ambientAgentsFiles: false, discoveredContextFiles: [], authRead: false, network: false, builtInPiTools: [], adapter: "pi-core-injected-stream-v1" },
 	});
 	const promotion = await promoteEvidence({ task, outputDir });
-	if (!promotion.accepted) throw new Error(`Pi adapter produced ineligible evidence: ${promotion.code}`);
+	if (!promotion.accepted || promotion.code !== "RUN_REGISTERED_NOT_EVIDENCE") throw new Error(`Pi adapter did not register a verified Run: ${promotion.code}`);
 	return Object.freeze({
 		lifecycle: inspectIdeaTask(task),
 		ideaId: task.ideaId,

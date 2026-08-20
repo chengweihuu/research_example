@@ -41,7 +41,7 @@ test("runs one isolated Pi Session through canonical sealing and bounded Evidenc
 	assert.equal(result.sessionId, result.runId);
 	assert.equal(result.manifestStatus, "COMPLETED");
 	assert.equal(result.verification.accepted, true);
-	assert.equal(result.promotion.code, "EVIDENCE_PROMOTION_ELIGIBLE");
+	assert.equal(result.promotion.code, "RUN_REGISTERED_NOT_EVIDENCE");
 	assert.equal("messages" in result, false);
 	const session = JSON.parse(await readFile(join(root, "run", "pi-core-session.json"), "utf8"));
 	assert.deepEqual(session.messages.map(message => message.role), ["user", "assistant"]);

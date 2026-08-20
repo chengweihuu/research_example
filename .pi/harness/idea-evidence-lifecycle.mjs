@@ -132,7 +132,7 @@ export async function promoteEvidence({ task, outputDir, candidate } = {}) {
 		state.promoted = true;
 		return Object.freeze({
 			accepted: true,
-			code: "EVIDENCE_PROMOTION_ELIGIBLE",
+			code: "RUN_REGISTERED_NOT_EVIDENCE",
 			ideaId: task.ideaId,
 			taskId: task.taskId,
 			runId: task.runId,
