@@ -6,6 +6,7 @@ import { createModelProfile } from "./model-profile.mjs";
 import { MechanicalGate, rejectOrdinaryTranscript } from "./runner.mjs";
 import { SETTLEMENT_STATES, settleUsage } from "./settlement.mjs";
 import { classifyTransportObservation } from "./transport-diagnostic.mjs";
+import { observePiEventStages } from "./pi-event-observer.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -49,4 +50,10 @@ test("fixed diagnostics, ledger, artifacts, and evidence cases detect tampering"
 	assert.equal(verifyLedger(tamperedLedger, "R-fixed").valid, false);
 	assert.notEqual(sha256("artifact original"), sha256("artifact tampered"), "artifact hash must bind exact bytes");
 	assert.deepEqual(rejectOrdinaryTranscript({ role: "assistant", content: "ordinary output" }), { accepted: false, code: "HARNESS_MANIFEST_REQUIRED" });
+});
+
+test("fixed observer cases retain stage names only", () => {
+	const receipt = observePiEventStages(["before_request", "agent_start", "stream_start", "agent_end", "after_request", "after_settlement"]);
+	assert.equal(receipt.stages.includes("stream_start"), true);
+	assert.throws(() => observePiEventStages(["before_request", { event: "agent_start" }, "after_request", "after_settlement"]));
 });
