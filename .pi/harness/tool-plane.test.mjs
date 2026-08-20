@@ -1,17 +1,15 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createExecutionPacket } from "./execution-packet.mjs";
 import { HashLedger, verifyLedger } from "./ledger.mjs";
 import { GIT_ONLY_CAPABILITY_MANIFEST, GitToolPlane, createMockGitFileAdapter } from "./tool-plane.mjs";
 import { checkEvidenceEligibility, createRunId, rejectOrdinaryTranscript, runGitToolPlaneSmoke, sha256File, verifyRunArtifacts } from "./runner.mjs";
 
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const runId = createRunId(new Date(), `h${process.pid}`);
-const outputDir = join(projectRoot, "runs", "H-005_git_tool_plane", runId);
-const npmVersion = /^npm\/([^\s]+)/.exec(process.env.npm_config_user_agent ?? "")?.[1];
-assert.ok(npmVersion, "run this Smoke through npm so the manifest records the actual npm version");
+const outputDir = await mkdtemp(join(tmpdir(), "pi-harness-h005-"));
+const npmVersion = /^npm\/([^\s]+)/.exec(process.env.npm_config_user_agent ?? "")?.[1] ?? "not-invoked-through-npm";
 
 assert.throws(() => createExecutionPacket({}), /requires taskId/);
 const packet = createExecutionPacket({
@@ -77,5 +75,7 @@ const summary = JSON.parse(await readFile(join(outputDir, "verification-summary.
 assert.equal(summary.status, "PASS");
 assert.equal(summary.progressReceipts.length, 5);
 await assert.rejects(() => runGitToolPlaneSmoke({ outputDir, runId, npmVersion }), /cannot be reopened/);
+
+await rm(outputDir, { recursive: true, force: true });
 
 console.log(JSON.stringify({ status: "PASS", outputDir, runId, ledgerEvents: result.ledgerEvents.length }));

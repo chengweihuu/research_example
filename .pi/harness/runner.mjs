@@ -11,6 +11,7 @@ import {
 import { Type } from "../node_modules/@earendil-works/pi-coding-agent/node_modules/typebox/build/index.mjs";
 import { createExecutionPacket, normalizeRelativePath } from "./execution-packet.mjs";
 import { HashLedger, verifyLedger } from "./ledger.mjs";
+import { settleUsage } from "./settlement.mjs";
 import { GIT_ONLY_CAPABILITY_MANIFEST, GitToolPlane, createMockGitFileAdapter } from "./tool-plane.mjs";
 
 export const HARNESS_VERSION = "0.1.0";
@@ -240,22 +241,32 @@ export async function runFauxSmoke({ outputDir, prompt = "Record the approved sm
 	await agent.waitForIdle();
 	const endedAt = new Date().toISOString();
 	const progress = actions.some((action) => action.decision.allowed === true);
-	const settlement = gate.settleTurn(progress);
+	const operationalSettlement = gate.settleTurn(progress);
 	const piVersion = await readPiVersion();
+	const requestEstimate = estimateRequest(prompt);
+	const accountingEstimate = Object.freeze({
+		reservedInputTokens: requestEstimate.estimatedInputTokens,
+		reservedOutputTokens: requestEstimate.estimatedOutputTokens,
+		catalogEstimatedCostUsd: 0,
+	});
 	const syntheticCalls = agent.state.messages
 		.filter((message) => message.role === "assistant")
 		.map((message, index) => ({
 			ordinal: index + 1,
 			provider: "faux",
-			usage: message.usage,
-			costUsd: 0,
+			settlement: settleUsage({
+				phase: "response",
+				stopReason: message.stopReason,
+				usage: message.usage,
+				estimate: accountingEstimate,
+			}),
 		}));
 	const manifest = {
 		kind: "pi-harness-run",
 		harnessVersion: HARNESS_VERSION,
 		taskId: "H-004",
 		runId: resolvedRunId,
-		status: settlement.state === "STUCK" ? "STUCK" : "COMPLETED",
+		status: operationalSettlement.state === "STUCK" ? "STUCK" : "COMPLETED",
 		outputDir: resolvedOutputDir,
 		contextManifest: {
 			ambientAgentsFiles: false,
@@ -274,7 +285,7 @@ export async function runFauxSmoke({ outputDir, prompt = "Record the approved sm
 			provider: "faux",
 			authentication: "not-read",
 		},
-		estimate: estimateRequest(prompt),
+		estimate: requestEstimate,
 		startedAt,
 		endedAt,
 	};
@@ -285,11 +296,11 @@ export async function runFauxSmoke({ outputDir, prompt = "Record the approved sm
 		liveModelCalls: 0,
 		syntheticFauxCalls: faux.state.callCount,
 		syntheticCalls,
-		costUsd: 0,
+		catalogEstimatedCostUsd: 0,
 		retries: 0,
 		compactions: 0,
 		actions,
-		settlement,
+		operationalSettlement,
 	};
 	const ledgerPath = resolve(resolvedOutputDir, "run-ledger.json");
 	const sessionPath = resolve(resolvedOutputDir, "pi-core-session.json");
@@ -311,7 +322,7 @@ export async function runFauxSmoke({ outputDir, prompt = "Record the approved sm
 			noCost: true,
 			noRetry: true,
 			noCompaction: true,
-			progressSettled: settlement.state === "RUNNING",
+			progressSettled: operationalSettlement.state === "RUNNING",
 		},
 	});
 	manifest.artifactHashes = {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
 	FIXED_CAPABILITY_MANIFEST,
 	FROZEN_CONTROLS,
@@ -13,11 +13,9 @@ import {
 } from "./runner.mjs";
 
 const runId = createRunId(new Date(), `h${process.pid}`);
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const runOutputDir = join(projectRoot, "runs", "H-004_git_only_runner", runId);
+const runOutputDir = await mkdtemp(join(tmpdir(), "pi-harness-h004-"));
 const npmUserAgent = process.env.npm_config_user_agent ?? "";
-const npmVersion = /^npm\/([^\s]+)/.exec(npmUserAgent)?.[1];
-assert.ok(npmVersion, "run this Smoke through npm so the manifest records the actual npm version");
+const npmVersion = /^npm\/([^\s]+)/.exec(npmUserAgent)?.[1] ?? "not-invoked-through-npm";
 const outputDir = runOutputDir;
 const gate = new MechanicalGate(outputDir);
 
@@ -44,9 +42,11 @@ const result = await runFauxSmoke({ outputDir: runOutputDir, runId, npmVersion }
 assert.equal(result.ledger.liveModelCalls, 0);
 assert.equal(result.ledger.syntheticFauxCalls, 1, "exactly one faux provider call is permitted");
 assert.equal(result.ledger.syntheticCalls.length, 1, "the Ledger must retain per-call usage");
-assert.equal(result.ledger.syntheticCalls[0].usage.totalTokens > 0, true);
-assert.equal(result.ledger.syntheticCalls[0].costUsd, 0);
-assert.equal(result.ledger.costUsd, 0);
+assert.equal(result.ledger.syntheticCalls[0].settlement.state, "provider_reported");
+assert.equal(result.ledger.syntheticCalls[0].settlement.actualUsage.totalTokens > 0, true);
+assert.equal("usage" in result.ledger.syntheticCalls[0], false);
+assert.equal("costUsd" in result.ledger.syntheticCalls[0], false);
+assert.equal(result.ledger.catalogEstimatedCostUsd, 0);
 assert.equal(result.ledger.retries, 0);
 assert.equal(result.ledger.compactions, 0);
 assert.equal(result.ledger.actions.length, 1);
@@ -71,5 +71,7 @@ assert.equal(
 	"manifest and ledger must reconcile",
 );
 await assert.rejects(() => runFauxSmoke({ outputDir: runOutputDir, runId, npmVersion }), /cannot be reopened/);
+
+await rm(runOutputDir, { recursive: true, force: true });
 
 console.log(JSON.stringify({ status: "PASS", outputDir: runOutputDir, syntheticFauxCalls: result.ledger.syntheticFauxCalls }));
