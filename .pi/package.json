@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "harness:smoke": "node harness/runner.test.mjs"
+    "harness:smoke": "node harness/runner.test.mjs",
+    "harness:h005-smoke": "node harness/tool-plane.test.mjs"
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "0.84.2"
