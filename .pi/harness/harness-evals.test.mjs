@@ -13,6 +13,7 @@ import { observePiEventStages } from "./pi-event-observer.mjs";
 import { projectCanary } from "./canary-runner.mjs";
 import { executeCanary } from "./canary-executor.mjs";
 import { sealCanonicalRun } from "./canonical-run-seal.mjs";
+import { createIdeaTask, promoteEvidence } from "./idea-evidence-lifecycle.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -78,4 +79,11 @@ test("fixed executor seals one independently verified canonical Run", async t =>
 	t.after(() => rm(outputDir, { recursive: true, force: true }));
 	const sealed = await sealCanonicalRun({ outputDir, taskId: "H-019", branch: "task/H-019-canonical-run-seal", ref: "5639fc7", executorResult: result, piSession: { kind: "pi-core-session", sessionId: "R-async", messages: [], events: [] }, contextManifest: { ambientContext: false, authRead: false }, capabilityManifest: { modelRequest: { maximumCalls: 1 }, tools: [] }, environment: { runtime: "host", node: process.version, piCodingAgent: "0.84.2" } });
 	assert.equal(sealed.manifest.status, "INCOMPLETE_RESPONSE"); assert.equal(sealed.verification.accepted, true);
+});
+
+test("fixed lifecycle keeps ordinary Pi output outside Evidence", async t => {
+	const outputDir = await mkdtemp(join(tmpdir(), "h021-eval-"));
+	t.after(() => rm(outputDir, { recursive: true, force: true }));
+	const task = createIdeaTask({ ideaId: "I-eval", taskId: "T-eval", runId: "R-eval-life", sessionId: "R-eval-life", question: "Can ordinary output promote?", outputDir, branch: "task/H-021-idea-evidence-lifecycle", ref: "e68a211" });
+	assert.equal((await promoteEvidence({ task, candidate: { role: "assistant", content: "unsealed" } })).code, "HARNESS_MANIFEST_REQUIRED");
 });
