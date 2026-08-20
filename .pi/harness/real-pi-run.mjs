@@ -29,14 +29,20 @@ function makeRunId() { return `R-${new Date().toISOString().replace(/[-:]/g, "")
 function observeStream(source, eventTypes) { const observed = new AssistantMessageEventStream(); void (async () => { for await (const event of source) { eventTypes.push(event.type); observed.push(event); } })(); return observed; }
 
 /** One real Pi Core request. Caller must explicitly pass --execute after reviewing --preflight. */
-export async function executeRealTerra({ runtime, runtimePrepared = false, runId = makeRunId(), outputDir = resolve("runs/H-026", runId), branch, ref }) {
+export function realRunOutputDir(taskId, runId) {
+	if (typeof taskId !== "string" || !/^H-\d+$/.test(taskId)) throw new TypeError("taskId must be an H-<number> identifier");
+	if (typeof runId !== "string" || !/^R-/.test(runId)) throw new TypeError("runId must begin with R-");
+	return resolve("runs", taskId, runId);
+}
+export async function executeRealTerra({ runtime, taskId = "H-026", runtimePrepared = false, runId = makeRunId(), outputDir = realRunOutputDir(taskId, runId), branch, ref }) {
+	if (outputDir !== realRunOutputDir(taskId, runId)) throw new Error("outputDir must match the explicit taskId/runId binding");
 	if (!runtimePrepared) await prepareRealTerraRuntime(runtime);
 	const model = runtime.getModel(REAL_TERRA.provider, REAL_TERRA.modelId);
 	const serializedBytes = Buffer.byteLength(JSON.stringify({ model: `${REAL_TERRA.provider}/${REAL_TERRA.modelId}`, systemPrompt: SYSTEM_PROMPT, prompt: PROMPT, tools: [], maxTokens: REAL_TERRA.outputTokens, retries: 0 }), "utf8");
 	const preflight = preflightRealTerra({ catalogModel: model, serializedBytes });
 	await mkdir(dirname(outputDir), { recursive: true });
 	const startedAtMs = Date.now();
-	const status = (phase, extra = {}) => writeHarnessStatus({ outputDir, status: { taskId: "H-026", runId, phase, model: { provider: REAL_TERRA.provider, id: REAL_TERRA.modelId }, calls: { used: phase === "PREFLIGHT" ? 0 : 1, limit: 1 }, usage: { state: phase === "SETTLED" ? "ACTUAL" : phase === "FAILED" ? "UNAVAILABLE" : "PENDING" }, startedAtMs, ...extra } });
+	const status = (phase, extra = {}) => writeHarnessStatus({ outputDir, status: { taskId, runId, phase, model: { provider: REAL_TERRA.provider, id: REAL_TERRA.modelId }, calls: { used: phase === "PREFLIGHT" ? 0 : 1, limit: 1 }, usage: { state: phase === "SETTLED" ? "ACTUAL" : phase === "FAILED" ? "UNAVAILABLE" : "PENDING" }, startedAtMs, ...extra } });
 	await status("PREFLIGHT"); await status("RUNNING");
 	const agentEventTypes = [], providerEventTypes = []; let agent; let streamCalls = 0;
 	try {
@@ -48,7 +54,7 @@ export async function executeRealTerra({ runtime, runtimePrepared = false, runId
 			return { stages: ["before_request", ...(agentEventTypes.includes("agent_start") ? ["agent_start"] : []), "stream_start", ...(assistant ? ["assistant_message"] : []), ...(providerEventTypes.length ? ["stream_end"] : []), ...(agentEventTypes.includes("agent_end") ? ["agent_end"] : []), "after_request", "after_settlement"], sseEvents: providerEventTypes.includes("start") ? ["opened", ...(providerEventTypes.includes("text_delta") ? ["text_delta"] : []), ...(done && Number.isFinite(usage?.input) && Number.isFinite(usage?.output) && usage.input + usage.output > 0 ? ["usage_complete", "done"] : ["interrupted"])] : [], assistant };
 		} });
 		if (streamCalls !== 1) throw new Error("Real runner did not complete exactly one provider stream");
-		const sealed = await sealCanonicalRun({ outputDir, taskId: "H-026", branch, ref, executorResult, piSession: { kind: "pi-core-session", sessionId: runId, messages: agent?.state.messages ?? [], agentEventTypes, providerEventTypes }, contextManifest: { ambientAgentsFiles: false, discoveredContextFiles: [], authRead: true, network: true, builtInPiTools: [], adapter: "pi-core-real-stream-v1" }, capabilityManifest: { modelRequest: { provider: REAL_TERRA.provider, modelId: REAL_TERRA.modelId, maximumCalls: 1 }, tools: [] }, environment: { runtime: "host", node: process.version, piCodingAgent: "0.84.2", authentication: "existing-openai-codex-login" } });
+		const sealed = await sealCanonicalRun({ outputDir, taskId, branch, ref, executorResult, piSession: { kind: "pi-core-session", sessionId: runId, messages: agent?.state.messages ?? [], agentEventTypes, providerEventTypes }, contextManifest: { ambientAgentsFiles: false, discoveredContextFiles: [], authRead: true, network: true, builtInPiTools: [], adapter: "pi-core-real-stream-v1" }, capabilityManifest: { modelRequest: { provider: REAL_TERRA.provider, modelId: REAL_TERRA.modelId, maximumCalls: 1 }, tools: [] }, environment: { runtime: "host", node: process.version, piCodingAgent: "0.84.2", authentication: "existing-openai-codex-login" } });
 		const verification = await verifyCanonicalRun({ outputDir }); const actual = executorResult.settlement.actualUsage;
 		if (actual && verification.accepted) await status("SETTLED", { finishedAtMs: Date.now(), usage: { state: "ACTUAL", inputTokens: actual.inputTokens, outputTokens: actual.outputTokens } });
 		else await status("FAILED", { finishedAtMs: Date.now(), diagnosticCode: actual ? "RUN_UNVERIFIED" : "USAGE_UNAVAILABLE" });
@@ -65,8 +71,8 @@ async function main() {
 	const serializedBytes = Buffer.byteLength(JSON.stringify({ model: `${REAL_TERRA.provider}/${REAL_TERRA.modelId}`, systemPrompt: SYSTEM_PROMPT, prompt: PROMPT, tools: [], maxTokens: REAL_TERRA.outputTokens, retries: 0 }), "utf8");
 	const preflight = preflightRealTerra({ catalogModel: model, serializedBytes });
 	if (mode === "--preflight") { process.stdout.write(`${JSON.stringify(preflight)}\n`); return; }
-	const runId = valueFor("--run-id"); const outputDir = valueFor("--output-dir");
-	if (!runId || !outputDir) throw new Error("--execute requires --run-id <id> --output-dir <absolute-dir>");
-	process.stdout.write(`${JSON.stringify(await executeRealTerra({ runtime, runtimePrepared: true, runId, outputDir, branch: "task/H-026-real-terra-bspline-run", ref: process.env.HARNESS_REF ?? "HEAD" }))}\n`);
+	const taskId = valueFor("--task-id"); const runId = valueFor("--run-id"); const outputDir = valueFor("--output-dir");
+	if (!taskId || !runId || !outputDir) throw new Error("--execute requires --task-id <H-id> --run-id <id> --output-dir <absolute-dir>");
+	process.stdout.write(`${JSON.stringify(await executeRealTerra({ runtime, taskId, runtimePrepared: true, runId, outputDir, branch: `task/${taskId.toLowerCase()}-terra-refresh-validation`, ref: process.env.HARNESS_REF ?? "HEAD" }))}\n`);
 }
 if (import.meta.url === `file://${process.argv[1]}`) main().catch(error => { process.stderr.write(`${error.name}: ${error.message}\n`); process.exitCode = 2; });

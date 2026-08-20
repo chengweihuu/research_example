@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { REAL_TERRA, preflightRealTerra, prepareRealTerraRuntime } from "./real-pi-run.mjs";
+import { REAL_TERRA, preflightRealTerra, prepareRealTerraRuntime, realRunOutputDir } from "./real-pi-run.mjs";
 
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 5, output: 30 } };
 test("real Terra preflight fixes model identity and one-call budget before transport", () => {
@@ -20,4 +20,8 @@ test("real runner synchronizes local runtime state before any model lookup", asy
 	await prepareRealTerraRuntime(runtime);
 	runtime.getModel("openai-codex", "gpt-5.6-terra");
 	assert.deepEqual(calls, [["refresh", { allowNetwork: false }], ["getModel"]]);
+});
+test("real Run output is bound to its explicit task and Run identity", () => {
+	assert.equal(realRunOutputDir("H-029", "R-20260820T150000Z-test0001").endsWith("runs/H-029/R-20260820T150000Z-test0001"), true);
+	assert.throws(() => realRunOutputDir("H-026", "not-a-run"), /runId/);
 });
