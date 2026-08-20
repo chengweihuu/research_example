@@ -17,6 +17,7 @@ import { createIdeaTask, promoteEvidence } from "./idea-evidence-lifecycle.mjs";
 import { runPiHarnessTask } from "./pi-task-adapter.mjs";
 import { runEntryRequest } from "./pi-task-entry.mjs";
 import { readHarnessStatus } from "./harness-status.mjs";
+import { validateLocalComputeRequest } from "./local-compute-runner.mjs";
 import { preflightRealTerra, prepareRealTerraRuntime } from "./real-pi-run.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
@@ -114,4 +115,8 @@ test("fixed real-run local refresh never enables network", async () => {
 	let options;
 	await prepareRealTerraRuntime({ refresh: async value => { options = value; }, getModel: () => undefined });
 	assert.deepEqual(options, { allowNetwork: false });
+});
+
+test("fixed local-compute boundary rejects shell execution", () => {
+	assert.throws(() => validateLocalComputeRequest({ scratchRoot: "/tmp", outputDir: "/tmp/run", argv: ["sh", "-c", "echo x"], artifacts: ["x"], timeoutMs: 1 }), /invalid/);
 });
