@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "harness:smoke": "node harness/runner.test.mjs"
+  },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "0.84.2"
   }
