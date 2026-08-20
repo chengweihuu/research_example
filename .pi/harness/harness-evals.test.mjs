@@ -14,6 +14,7 @@ import { projectCanary } from "./canary-runner.mjs";
 import { executeCanary } from "./canary-executor.mjs";
 import { sealCanonicalRun } from "./canonical-run-seal.mjs";
 import { createIdeaTask, promoteEvidence } from "./idea-evidence-lifecycle.mjs";
+import { runPiHarnessTask } from "./pi-task-adapter.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -86,4 +87,8 @@ test("fixed lifecycle keeps ordinary Pi output outside Evidence", async t => {
 	t.after(() => rm(outputDir, { recursive: true, force: true }));
 	const task = createIdeaTask({ ideaId: "I-eval", taskId: "T-eval", runId: "R-eval-life", sessionId: "R-eval-life", question: "Can ordinary output promote?", outputDir, branch: "task/H-021-idea-evidence-lifecycle", ref: "e68a211" });
 	assert.equal((await promoteEvidence({ task, candidate: { role: "assistant", content: "unsealed" } })).code, "HARNESS_MANIFEST_REQUIRED");
+});
+
+test("fixed Pi adapter requires an injected stream before it can start a Run", async () => {
+	await assert.rejects(() => runPiHarnessTask({ ideaId: "I-adapter", taskId: "T-adapter", runId: "R-adapter", question: "bounded", outputDir: "/tmp/h022-eval", branch: "task/H-022-pi-core-adapter", ref: "d52fd6a", catalogModel: terra }), /streamFn/);
 });
