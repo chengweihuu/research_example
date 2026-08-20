@@ -19,11 +19,18 @@ export function preflightRealTerra({ catalogModel, serializedBytes }) {
 	if (profile.request.quote.estimatedTotalTokens > REAL_TERRA.totalTokenCap || profile.request.catalogMaximumCostUsd > REAL_TERRA.usdCap) throw new Error("Preflight failed: quote exceeds frozen budget");
 	return Object.freeze({ provider: profile.provider, modelId: profile.modelId, quote: profile.request.quote, catalogMaximumCostUsd: profile.request.catalogMaximumCostUsd, limits: { providerCalls: 1, retries: 0, ...REAL_TERRA } });
 }
+/** Match Pi's standard service initialization: synchronize local auth/catalog state without network. */
+export async function prepareRealTerraRuntime(runtime) {
+	if (!runtime || typeof runtime.refresh !== "function" || typeof runtime.getModel !== "function") throw new TypeError("runtime must provide refresh and getModel");
+	await runtime.refresh({ allowNetwork: false });
+	return runtime;
+}
 function makeRunId() { return `R-${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}-${randomUUID().replaceAll("-", "").slice(0, 8)}`; }
 function observeStream(source, eventTypes) { const observed = new AssistantMessageEventStream(); void (async () => { for await (const event of source) { eventTypes.push(event.type); observed.push(event); } })(); return observed; }
 
 /** One real Pi Core request. Caller must explicitly pass --execute after reviewing --preflight. */
-export async function executeRealTerra({ runtime, runId = makeRunId(), outputDir = resolve("runs/H-026", runId), branch, ref }) {
+export async function executeRealTerra({ runtime, runtimePrepared = false, runId = makeRunId(), outputDir = resolve("runs/H-026", runId), branch, ref }) {
+	if (!runtimePrepared) await prepareRealTerraRuntime(runtime);
 	const model = runtime.getModel(REAL_TERRA.provider, REAL_TERRA.modelId);
 	const serializedBytes = Buffer.byteLength(JSON.stringify({ model: `${REAL_TERRA.provider}/${REAL_TERRA.modelId}`, systemPrompt: SYSTEM_PROMPT, prompt: PROMPT, tools: [], maxTokens: REAL_TERRA.outputTokens, retries: 0 }), "utf8");
 	const preflight = preflightRealTerra({ catalogModel: model, serializedBytes });
@@ -53,12 +60,13 @@ async function main() {
 	const mode = process.argv[2]; if (!new Set(["--preflight", "--execute"]).has(mode)) throw new Error("Use --preflight or --execute");
 	const valueFor = flag => { const index = process.argv.indexOf(flag); return index < 0 ? undefined : process.argv[index + 1]; };
 	const runtime = await ModelRuntime.create({ allowModelNetwork: false, refreshOnCreate: false });
+	await prepareRealTerraRuntime(runtime);
 	const model = runtime.getModel(REAL_TERRA.provider, REAL_TERRA.modelId);
 	const serializedBytes = Buffer.byteLength(JSON.stringify({ model: `${REAL_TERRA.provider}/${REAL_TERRA.modelId}`, systemPrompt: SYSTEM_PROMPT, prompt: PROMPT, tools: [], maxTokens: REAL_TERRA.outputTokens, retries: 0 }), "utf8");
 	const preflight = preflightRealTerra({ catalogModel: model, serializedBytes });
 	if (mode === "--preflight") { process.stdout.write(`${JSON.stringify(preflight)}\n`); return; }
 	const runId = valueFor("--run-id"); const outputDir = valueFor("--output-dir");
 	if (!runId || !outputDir) throw new Error("--execute requires --run-id <id> --output-dir <absolute-dir>");
-	process.stdout.write(`${JSON.stringify(await executeRealTerra({ runtime, runId, outputDir, branch: "task/H-026-real-terra-bspline-run", ref: process.env.HARNESS_REF ?? "HEAD" }))}\n`);
+	process.stdout.write(`${JSON.stringify(await executeRealTerra({ runtime, runtimePrepared: true, runId, outputDir, branch: "task/H-026-real-terra-bspline-run", ref: process.env.HARNESS_REF ?? "HEAD" }))}\n`);
 }
 if (import.meta.url === `file://${process.argv[1]}`) main().catch(error => { process.stderr.write(`${error.name}: ${error.message}\n`); process.exitCode = 2; });

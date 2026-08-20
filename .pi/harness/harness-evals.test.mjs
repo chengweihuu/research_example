@@ -17,7 +17,7 @@ import { createIdeaTask, promoteEvidence } from "./idea-evidence-lifecycle.mjs";
 import { runPiHarnessTask } from "./pi-task-adapter.mjs";
 import { runEntryRequest } from "./pi-task-entry.mjs";
 import { readHarnessStatus } from "./harness-status.mjs";
-import { preflightRealTerra } from "./real-pi-run.mjs";
+import { preflightRealTerra, prepareRealTerraRuntime } from "./real-pi-run.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -108,4 +108,10 @@ test("fixed Codex entry boundary launches only one offline fixture Run", async t
 test("fixed real-run preflight preserves Terra identity and no retry", () => {
 	const result = preflightRealTerra({ catalogModel: { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 5, output: 30 } }, serializedBytes: 200 });
 	assert.equal(result.limits.providerCalls, 1); assert.equal(result.limits.retries, 0);
+});
+
+test("fixed real-run local refresh never enables network", async () => {
+	let options;
+	await prepareRealTerraRuntime({ refresh: async value => { options = value; }, getModel: () => undefined });
+	assert.deepEqual(options, { allowNetwork: false });
 });

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { REAL_TERRA, preflightRealTerra } from "./real-pi-run.mjs";
+import { REAL_TERRA, preflightRealTerra, prepareRealTerraRuntime } from "./real-pi-run.mjs";
 
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 5, output: 30 } };
 test("real Terra preflight fixes model identity and one-call budget before transport", () => {
@@ -13,4 +13,11 @@ test("real Terra preflight fixes model identity and one-call budget before trans
 test("real Terra preflight rejects catalog substitution and cap breach", () => {
 	assert.throws(() => preflightRealTerra({ catalogModel: { ...terra, id: "gpt-5.6-sol" }, serializedBytes: 1 }), /exact Terra/);
 	assert.throws(() => preflightRealTerra({ catalogModel: terra, serializedBytes: 100000 }), /cap exceeded/);
+});
+test("real runner synchronizes local runtime state before any model lookup", async () => {
+	const calls = [];
+	const runtime = { async refresh(options) { calls.push(["refresh", options]); }, getModel() { calls.push(["getModel"]); return terra; } };
+	await prepareRealTerraRuntime(runtime);
+	runtime.getModel("openai-codex", "gpt-5.6-terra");
+	assert.deepEqual(calls, [["refresh", { allowNetwork: false }], ["getModel"]]);
 });
