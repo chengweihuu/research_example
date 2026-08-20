@@ -8,6 +8,7 @@ import { SETTLEMENT_STATES, settleUsage } from "./settlement.mjs";
 import { classifyTransportObservation } from "./transport-diagnostic.mjs";
 import { observePiEventStages } from "./pi-event-observer.mjs";
 import { projectCanary } from "./canary-runner.mjs";
+import { executeCanary } from "./canary-executor.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -63,4 +64,10 @@ test("fixed canonical Runner case binds one request to all projections", () => {
 	const model = { id: "gpt-5.6-sol", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 3, output: 18 } };
 	const result = projectCanary({ runId: "R-eval", provider: model.provider, modelId: model.id, catalogModel: model, serializedBytes: 10, outputTokens: 10, totalTokenCap: 2900, usdCap: .05, stages: ["before_request", "agent_start", "stream_start", "assistant_message", "stream_end", "agent_end", "after_request", "after_settlement"], sseEvents: ["opened", "usage_complete", "done"], assistant: { stopReason: "stop", usage: { input: 2, output: 1 } }, invoke: () => {} });
 	assert.equal(result.requestCount, 1); assert.equal(result.ledgerVerification.valid, true);
+});
+
+test("fixed executor accepts only sanitized async outcomes", async () => {
+	const model = { id: "gpt-5.6-sol", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 3, output: 18 } };
+	const result = await executeCanary({ runId: "R-async", provider: model.provider, modelId: model.id, catalogModel: model, serializedBytes: 1, outputTokens: 1, totalTokenCap: 2900, usdCap: .05, session: { sessionId: "R-async", eventTypes: [] }, transport: async () => ({ stages: ["before_request", "agent_start", "stream_start", "agent_end", "after_request", "after_settlement"], sseEvents: ["opened", "interrupted"] }) });
+	assert.equal(result.executorCalls, 1); assert.equal(result.sseOutcome.outcome, "stream_interrupted");
 });
