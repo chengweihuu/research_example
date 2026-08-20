@@ -1,4 +1,5 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+import { writeHarnessStatus } from "./harness-status.mjs";
 import { AssistantMessageEventStream } from "../node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-ai/dist/utils/event-stream.js";
 import { runPiHarnessTask } from "./pi-task-adapter.mjs";
 
@@ -42,7 +43,25 @@ function fixtureStream(model) {
 
 export async function runEntryRequest(request) {
 	validateEntryRequest(request);
-	return runPiHarnessTask({ ...request, streamFn: async model => fixtureStream(model) });
+	const startedAtMs = Date.now();
+	const status = (phase, extra = {}) => writeHarnessStatus({ outputDir: request.outputDir, status: {
+		taskId: request.taskId, runId: request.runId, phase, model: { provider: request.catalogModel.provider, id: request.catalogModel.id },
+		calls: { used: phase === "PREFLIGHT" ? 0 : 1, limit: 1 }, usage: { state: phase === "SETTLED" ? "ACTUAL" : phase === "FAILED" ? "UNAVAILABLE" : "PENDING" },
+		startedAtMs, ...extra,
+	} });
+	await mkdir(request.outputDir, { recursive: true });
+	await status("PREFLIGHT");
+	await status("RUNNING");
+	try {
+		const result = await runPiHarnessTask({ ...request, streamFn: async model => fixtureStream(model) });
+		const session = JSON.parse(await readFile(`${request.outputDir}/pi-core-session.json`, "utf8"));
+		const assistant = session.messages.findLast(message => message.role === "assistant");
+		await status("SETTLED", { finishedAtMs: Date.now(), usage: { state: "ACTUAL", inputTokens: assistant.usage.input, outputTokens: assistant.usage.output } });
+		return result;
+	} catch (error) {
+		await status("FAILED", { finishedAtMs: Date.now(), diagnosticCode: "RUN_FAILED" });
+		throw error;
+	}
 }
 
 async function main() {
