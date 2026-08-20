@@ -15,6 +15,7 @@ import { executeCanary } from "./canary-executor.mjs";
 import { sealCanonicalRun } from "./canonical-run-seal.mjs";
 import { createIdeaTask, promoteEvidence } from "./idea-evidence-lifecycle.mjs";
 import { runPiHarnessTask } from "./pi-task-adapter.mjs";
+import { runEntryRequest } from "./pi-task-entry.mjs";
 
 const estimate = { reservedInputTokens: 2500, reservedOutputTokens: 400, catalogEstimatedCostUsd: 0.0098 };
 const terra = { id: "gpt-5.6-terra", provider: "openai-codex", api: "responses", maxTokens: 4096, cost: { input: 2, output: 12 } };
@@ -91,4 +92,12 @@ test("fixed lifecycle keeps ordinary Pi output outside Evidence", async t => {
 
 test("fixed Pi adapter requires an injected stream before it can start a Run", async () => {
 	await assert.rejects(() => runPiHarnessTask({ ideaId: "I-adapter", taskId: "T-adapter", runId: "R-adapter", question: "bounded", outputDir: "/tmp/h022-eval", branch: "task/H-022-pi-core-adapter", ref: "d52fd6a", catalogModel: terra }), /streamFn/);
+});
+
+test("fixed Codex entry boundary launches only one offline fixture Run", async t => {
+	const outputDir = await mkdtemp(join(tmpdir(), "h023-eval-"));
+	t.after(() => rm(outputDir, { recursive: true, force: true }));
+	const result = await runEntryRequest({ ideaId: "I-h023-eval", taskId: "T-h023-eval", runId: "R-h023-eval", question: "fixture", outputDir, branch: "task/H-023-pi-task-entry", ref: "f60c796", mode: "fixture", catalogModel: { id: "harness-faux-1", provider: "harness-faux", api: "responses", maxTokens: 256, cost: { input: 0, output: 0 } } });
+	assert.equal(result.verification.accepted, true);
+	assert.equal(result.streamCalls, 1);
 });
